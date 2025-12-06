@@ -11,3 +11,4 @@ wheels/
 
 # File not to commit
 .env
+.vscode
