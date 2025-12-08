@@ -1,4 +1,3 @@
-from functions.get_files_info import get_files_info
 from functions.write_file import write_file
 
 def main():

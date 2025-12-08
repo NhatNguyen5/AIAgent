@@ -1,12 +1,15 @@
 import os
 from .file_utils import file_verify_file, FileUtilsError
 import config
+from my_logging import log
 
 def get_file_content(working_directory, file_path):
     path_to_file = file_verify_file(working_directory, file_path)
     ret_string = f"Result for {'current' if file_path == '.' else file_path} directory:\n"
+    log(f"Attempting to read file: {file_path}")
     if path_to_file in (FileUtilsError.FILE_OUTSIDE_WORKING_DIR.value.format(file_path=file_path),
                              FileUtilsError.FILE_NOT_FOUND_OR_NOT_REGULAR.value.format(file_path=file_path)):
+        log(f"Error accessing file: {path_to_file}")
         return ret_string + "    " + path_to_file
     with open(path_to_file, 'r') as file:
         content = file.read()

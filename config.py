@@ -1,1 +1,3 @@
 CHARACTER_LIMIT = 10000
+LOGGING_ENABLED = True
+MODEL_NAME = "gemini-2.5-flash"
