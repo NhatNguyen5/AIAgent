@@ -3,7 +3,6 @@ import os
 from dotenv import load_dotenv
 from google import genai
 from google.genai import types, errors
-from google.api_core import exceptions as google_exceptions
 from config import *
 from prompts import *
 from my_logging import log
