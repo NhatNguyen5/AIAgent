@@ -51,13 +51,12 @@ def file_verify_file(working_directory, file, options=None):
     path_to_file = os.path.join(working_directory, file)
     verify_result = path_to_file
     match options:
-        case FileOperator.READ_FILE, None:
+        case FileOperator.READ_FILE:
             if not path_to_file.startswith(working_directory) or ".." in os.path.relpath(path_to_file, working_directory):   
-                verify_result = FileUtilsError.FILE_READ_OUTSIDE_WORKING_DIR.value.format(directory=path_to_file)
+                verify_result = FileUtilsError.FILE_READ_OUTSIDE_WORKING_DIR.value.format(file_path=path_to_file)
             
             if not os.path.isfile(path_to_file):
-                verify_result = FileUtilsError.FILE_READ_NOT_FOUND_OR_NOT_REGULAR.value.format(directory=path_to_file)
-
+                verify_result = FileUtilsError.FILE_READ_NOT_FOUND_OR_NOT_REGULAR.value.format(file_path=path_to_file)
         case FileOperator.WRITE_FILE:
             if not path_to_file.startswith(working_directory) or ".." in os.path.relpath(path_to_file, working_directory):
                 verify_result = FileUtilsError.FILE_WRITE_OUTSIDE_WORKING_DIR.value.format(file_path=path_to_file)

@@ -15,8 +15,8 @@ schema_get_files_info = types.FunctionDeclaration(
     ),
 )
 
-schema_get_file_contents = types.FunctionDeclaration(
-    name="get_file_contents",
+schema_get_file_content = types.FunctionDeclaration(
+    name="get_file_content",
     description="Reads the contents of a specified file within the working directory.",
     parameters=types.Schema(
         type=types.Type.OBJECT,
@@ -65,5 +65,5 @@ schema_write_file = types.FunctionDeclaration(
 )
 
 available_functions = types.Tool(
-    function_declarations=[schema_get_files_info, schema_get_file_contents, schema_run_python_file, schema_write_file],
+    function_declarations=[schema_get_files_info, schema_get_file_content, schema_run_python_file, schema_write_file],
 )

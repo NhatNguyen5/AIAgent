@@ -3,9 +3,10 @@ import os
 from dotenv import load_dotenv
 from google import genai
 from google.genai import types, errors
+from functions.call_function import call_function
 from config import *
 from prompts import *
-from my_logging import log
+from my_logging import log, log_print
 from functions.my_schemas import available_functions
 
 def main():
@@ -31,19 +32,35 @@ def main():
             )   
         )
     except errors.ClientError as e:
-        log(f"Error during content generation: {e.code} | {e.message}")
-        print(f"An error occurred: {e.message}")
+        log_print(f"Error during content generation: {e.code} | {e.message}",
+                  f"An error occurred: {e.message}")
         return
+    
+    # if verbose, print detailed info
     if args.verbose:
         print(f"User prompt: {args.user_prompt}")
         print(f"Prompt tokens: {response.usage_metadata.prompt_token_count}")
         print(f"Response tokens: {response.usage_metadata.candidates_token_count}")
     log(f"User prompt: {args.user_prompt}, Prompt tokens: {response.usage_metadata.prompt_token_count}, Response tokens: {response.usage_metadata.candidates_token_count}")
-    log(f"Response: {response}")
-    print(f"Response:\n{response.text}")
+    log_print(f"Response: {response.text}", 
+              f"Response:\n{response.text}")
+    
+    # create a list to hold error responses
+    response_list = []
+    # handle function calls
     if response.function_calls != None:
         for function_call in response.function_calls:
-            print(f"Calling function: {function_call.name}({function_call.args})")
+            try:
+                function_call_result = call_function(function_call, verbose=args.verbose)
+            except Exception as e:
+                log_print(f"Error during function call: {str(e)}",
+                          f"An error occurred while calling the function: {str(e)}")
+                raise e
+            response_list.append(function_call_result.parts[0])
+            if args.verbose:
+                print(f"-> {function_call_result.parts[0].function_response.response}")
+            else:
+                print(f"Function response: {function_call_result.parts[0].function_response.response['result']}")
 
 if __name__ == "__main__":
     main()

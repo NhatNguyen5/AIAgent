@@ -10,7 +10,6 @@ def write_file(working_directory, file_path, content):
         dir_part = file_path.rsplit('/', 1)[0]
         path_to_directory = file_verify_path(working_directory, dir_part)
         
-
         # if directory is outside working dir, return error
         if path_to_directory == FileUtilsError.OUTSIDE_WORKING_DIR.value.format(directory=dir_part):
             log(f"Error accessing directory: {path_to_directory}")

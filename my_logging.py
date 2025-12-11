@@ -2,7 +2,26 @@ import os
 from datetime import datetime
 from functions.file_utils import FileUtilsError, file_verify_path
 from inspect import getframeinfo, stack
-from config import LOGGING_ENABLED
+from config import LOGGING_ENABLED, LOG_TRACING_ENABLED
+
+calldepth = 2
+
+def get_caller_info():
+    if not LOG_TRACING_ENABLED:
+        frameinfo = getframeinfo(stack()[calldepth][0])
+        return f"{frameinfo.filename.rsplit('/', 1)[-1]}:{frameinfo.lineno}"
+    trace_back_stack = []
+    for _depth in range(calldepth, stack().__len__()):
+        test_frame = getframeinfo(stack()[_depth][0])
+        trace_back_stack.append(f"{test_frame.filename.rsplit('/', 1)[-1]}:{test_frame.lineno}")
+    return " -> ".join(reversed(trace_back_stack))
+
+def log_print(log_message, print_message=""):
+    global calldepth
+    calldepth = 3
+    print(log_message) if print_message == "" else print(print_message)
+    log(log_message)
+    calldepth = 2
 
 def log(message):
     if not LOGGING_ENABLED:
@@ -10,8 +29,7 @@ def log(message):
     date = datetime.now().strftime("%Y-%m-%d")
     time = datetime.now().strftime("%H:%M:%S")
     timestamp = f"{date} {time}"
-    frameinfo = getframeinfo(stack()[1][0])
-    logistic_data = f"[{timestamp}][{frameinfo.filename.rsplit('/', 1)[-1]}:{frameinfo.lineno}]"
+    logistic_data = f"[{timestamp}][{get_caller_info()}]"
     padded_space = "".rjust(len(logistic_data))
     message = message.replace("\n", f"\n{padded_space}")  # Ensure single line log entries
     log_entry = f"{logistic_data} {message}\n"
