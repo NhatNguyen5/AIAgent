@@ -14,7 +14,7 @@ def get_caller_info():
     for _depth in range(calldepth, stack().__len__()):
         test_frame = getframeinfo(stack()[_depth][0])
         trace_back_stack.append(f"{test_frame.filename.rsplit('/', 1)[-1]}:{test_frame.lineno}")
-    return " -> ".join(reversed(trace_back_stack))
+    return ">".join(reversed(trace_back_stack))
 
 def log_print(log_message, print_message=""):
     global calldepth
