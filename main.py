@@ -26,15 +26,18 @@ def main():
     # create initial message
     messages = [types.Content(role="user", parts=[types.Part(text=args.user_prompt)])]
 
+    # main interaction loop, keep trying until no function calls are left or max attempts reached
     for _ in range(MAX_ATTEMPTS):
         log(f"Attempt {_ + 1} to get response.")
         response = generate_content(client, messages)
         candidate_no_function_call = True
         for candidate in response.candidates:
-            log(f"Candidate of attempt {_ + 1} received: {candidate.content}")
+            log(f"Candidate of attempt {_ + 1} received.")
             messages.append(candidate.content)
             if candidate.content.parts is None or candidate.content.parts[0].function_call is None:
                 continue
+            #log(f"  Function call: {candidate.content.parts[0].function_call.name}({candidate.content.parts[0].function_call.args})")
+            log(f"  Agent text: {candidate.content.parts[0].text}")
             candidate_no_function_call = False
             response_function_call_result = do_response_call_function(response, args)
             if response_function_call_result is not None:
@@ -69,8 +72,8 @@ def print_response(response, args):
         print(f"Prompt tokens: {response.usage_metadata.prompt_token_count}")
         print(f"Response tokens: {response.usage_metadata.candidates_token_count}")
     log(f"User prompt: {args.user_prompt}, Prompt tokens: {response.usage_metadata.prompt_token_count}, Response tokens: {response.usage_metadata.candidates_token_count}")
-    log_print(f"Response: {response.text}", 
-              f"Response:\n{response.text}")
+    log_print(f"Final response: {response.text}", 
+              f"Final response:\n{response.text}")
     #log(f"Response: {response.text}")
 
 def do_response_call_function(response, args):
